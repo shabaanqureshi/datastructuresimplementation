@@ -1,76 +1,100 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class HashTable<Key, Value> {
+public class HashTable<K, V> {
 
 	private int size = 0;
-	private int bucket;
-	LinkedList[] table;
+	private int capacity;
+	private LinkedList<Pair>[] table;
 
-	//Default constructor
 	public HashTable() {
-		table = new LinkedList[10];
+		int capacity = 10;
+		table = new LinkedList[capacity];
 		for (int i = 0; i < table.length; i++) {
-			table[i] = new LinkedList<Value>();
+			table[i] = new LinkedList<Pair>();
+		}
+
+	}
+
+	public HashTable(int capacity) {
+		this.capacity = capacity;
+		LinkedList<Pair>[] table = new LinkedList[this.capacity];
+		for (int i = 0; i < table.length; i++) {
+			table[i] = new LinkedList<Pair>();
 		}
 	}
 
-	//Constructor 
-	public HashTable(int bucket) {
-		table = new LinkedList[bucket];
-		for (int i = 0; i < table.length; i++) {
-			table[i] = new LinkedList<Value>();
+	public void clear() {
+		size = 0;
+		table = new LinkedList[size];
+	}
+
+	public boolean containsKey(K key) {
+		LinkedList<Pair> list = table[((key.hashCode() % capacity) + capacity) % capacity];
+		for (Pair p: list) {
+			if (p.key.equals(key)) {
+				return true;
+			}
 		}
-	}
-
-
-	Value put(Key key, Value value) {
-		return null;
-	}
-
-	//Removes all of the mappings from the map
-	void clear() {
-	}
-
-	void rehash() {
-
-	}
-
-	Value remove(Key key) {
-		return null;
-	}
-
-
-
-	//Return true if the map contains a mapping for the specified key
-	boolean containsKey(Key key) {
 		return false;
 	}
 
-	//Returns false if this map maps one or more keys to the specified value
-	boolean containsValue(Value value) {
-		return true;
-	}
-
-	//Return the value to which the specified key is mapped or null if this map contains no mapping for the key
-	Value get(Key key) {
+	public V get(K key) {
+		LinkedList<Pair> list = table[((key.hashCode() % capacity) + capacity) % capacity];
+		for (Pair p: list) {
+			if (p.key.equals(key)) {
+				return (V) p.value;
+			}
+		}
 		return null;
 	}
 
-	//Returns the hash code value for this map
-	int hashcode() {
-		return 5;
+	public void put(K key, V value) {
+		LinkedList<Pair> list = table[((key.hashCode() % capacity) + capacity) % capacity];
+		for (Pair p: list) {
+			if (containsKey(key)) {
+				if(p.key.equals(key)) {
+					p.value = (V) value;
+				}
+			}
+			else {
+				Pair newPair = new Pair((K)key, (V)value);
+				list.addLast(newPair);
+				size = size + 1;
+			}
+		}
+
+
 	}
 
+	public void resize(int capacity) {
 
-	//Returns the number of key-value mappings in this map
-	int size() {
+	}
+
+	public int size() {
 		return size;
 	}
-
-
 	public static void main(String[] args) {
-		HashTable<String, Integer> t = new HashTable<String, Integer>();
-		System.out.println(t.size());
+		HashTable<Integer, Integer> map = new HashTable<Integer, Integer>();
+		map.put(5, 2);
+		map.put(5,1);
+		map.put(8,1);
+		map.containsKey(8);
+		map.containsKey(7);
+		map.get(1);
+		map.clear();
+		map.size();
+		map.containsKey(8);
+		System.out.println("testing");
+	}
+
+	public class Pair<K, V> {
+		K key;
+		V value;
+
+		public Pair(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
 	}
 }
